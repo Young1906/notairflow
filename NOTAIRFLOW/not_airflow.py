@@ -1,10 +1,10 @@
 import inspect
-from collections import defaultdict
-from uuid import uuid4
 import warnings
+from collections import defaultdict
 from functools import wraps
+from uuid import uuid4
+
 import networkx as nx
-from matplotlib import pyplot as plt
 
 
 class Graph:
@@ -29,12 +29,13 @@ class Graph:
         # check for circle
         try:
             cycles = nx.find_cycle(self.G)
+
         except nx.exception.NetworkXNoCycle:
             cycles = []
 
-        cycles_ = [
-                (self.get_node_by_key(u), self.get_node_by_key(v)) 
-                for (u, v) in cycles]
+        # cycles_ = [
+        #         (self.get_node_by_key(u), self.get_node_by_key(v)) 
+        #         for (u, v) in cycles]
         
         # friendly name
         if cycles:
@@ -45,6 +46,7 @@ class Graph:
     def get_seq(self):
         seq = nx.topological_sort(self.G)
         return list(seq)
+
 
 class Node:
     def __init__(self, name: str, g: Graph):
@@ -73,15 +75,14 @@ class Job(Graph):
         super().__init__()
         self.name = name
 
-    def execute(self):
-        assert self.is_valid(), ValueError("Invalid DAG, found cycle in DAG")
+    def __call__(self):
 
         # Get execution sequence: return a sequence of task's id
         seq = self.get_seq()
 
         for task in seq:
             task = self.get_node_by_key(task)
-            code, msg = task.f()
+            code, msg = task()
 
             if code != 0:
                 raise ValueError(msg)
@@ -89,8 +90,14 @@ class Job(Graph):
 
         return 0, "success"
 
-    def __call__(self):
-        return self.execute()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        is_valid = self.is_valid()
+        if not is_valid:
+            raise ValueError("Invalid DAG, found cycle in DAG")
 
 
 class Task(Node):
@@ -111,9 +118,9 @@ class Task(Node):
             try:
                 ret = f() 
                 if ret:
+                    # f() must be self-contained, no args can be passed
+                    # no result can be returned
                     warnings.warn(f"Task {self.name} return data, this will be discard")
-                # f() must be self-contained, no args can be passed
-                # no result can be returned
                 return 0, None
             except Exception as e:
                 return 1, str(e)
@@ -126,4 +133,4 @@ class Task(Node):
 
         return inner
 
-
+    def __call__(self): return self.f()
