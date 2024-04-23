@@ -1,5 +1,8 @@
-from NOTAIRFLOW import Task, Job
+import networkx as nx
+from matplotlib import pyplot as plt
 
+from NOTAIRFLOW.cores import Job
+from NOTAIRFLOW.cores import Task
 
 def TestJob() -> Job:
     with Job("test-job") as job:
@@ -26,5 +29,4 @@ def TestJob() -> Job:
 
 if __name__ == "__main__":
     j = TestJob()
-    code, msg = j()
-    print(code, msg)
+    j()

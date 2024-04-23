@@ -12,7 +12,7 @@ class Job:
     def __init__(self, name: str):
         self.name = name
         self.G = nx.DiGraph()
-
+        
         # keep track of the node by id
         self.nodes = {}
         self.freeze = False
@@ -44,9 +44,9 @@ class Job:
 
         # friendly name
         # cycles_ = [
-        #         (self.get_node_by_key(u), self.get_node_by_key(v))
+        #         (self.get_node_by_key(u), self.get_node_by_key(v)) 
         #         for (u, v) in cycles]
-
+        
         if cycles:
             return False
 
@@ -61,6 +61,7 @@ class Job:
         return list(seq)
 
     def __call__(self):
+
         # Get execution sequence: return a sequence of task's id
         seq = self.get_seq()
 
@@ -71,11 +72,12 @@ class Job:
             if code != 0:
                 # raise ValueError(msg)
                 warnings.warn(f"Task {task.name} failed!!! Err msg: {msg}")
-
+                
                 # interrupt the sequence and exit
                 return code, msg
 
         return 0, "success"
+
 
     def __enter__(self):
         return self
@@ -89,7 +91,6 @@ class Job:
         if not is_valid:
             raise ValueError("Invalid DAG, found cycle in DAG")
 
-
 class Task:
     def __init__(self, job: Job, name: str, f: callable):
         self.name = name
@@ -101,7 +102,7 @@ class Task:
 
         # verify function signature: no params can be passed into f()
         spec = inspect.getargspec(f)
-
+        
         if len(spec.args) or spec.varargs or spec.keywords:
             raise NotImplementedError("Can't pass anything into f() yet")
 
@@ -124,10 +125,9 @@ class Task:
         """
         tranform f signature f(any) -> any() into f() -> code, msg
         """
-
         def __inner__():
             try:
-                ret = f()
+                ret = f() 
                 if ret:
                     # f() must be self-contained, no args can be passed
                     # no result can be returned
@@ -135,20 +135,16 @@ class Task:
                 return 0, None
             except Exception as e:
                 return 1, str(e)
-
         return __inner__
 
     """
     Convert any callable func into task instance,
     for syntax convenience
     """
-
     @staticmethod
     def wrapper(job):
         def inner(func):
             return Task(job, func.__name__, func)
-
         return inner
 
-    def __call__(self):
-        return self.f()
+    def __call__(self): return self.f()
