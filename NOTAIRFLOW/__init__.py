@@ -1,1 +1,1 @@
-from .not_airflow import Job, Task
+from .cores import Job, Task

@@ -1,21 +1,22 @@
 import networkx as nx
 from matplotlib import pyplot as plt
 
-from NOTAIRFLOW.not_airflow import Job
-from NOTAIRFLOW.not_airflow import Task
+from NOTAIRFLOW.cores import Job
+from NOTAIRFLOW.cores import Task
 
 def TestJob() -> Job:
     with Job("test-job") as job:
-        @Task.task_wrapper(job)
+        @Task.wrapper(job)
         def test01():
             print("x")
 
-        @Task.task_wrapper(job)
+        @Task.wrapper(job)
         def test02():
             print("y")
 
-        @Task.task_wrapper(job)
+        @Task.wrapper(job)
         def test03():
+            1/0
             print("z")
 
         # invalid job, contain cycle

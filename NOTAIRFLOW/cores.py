@@ -3,7 +3,8 @@ import warnings
 from collections import defaultdict
 from functools import wraps
 from uuid import uuid4
-
+from .exceptions import NotAirflowInvalidDAG
+from .exceptions import NotAirflowOutsideContext
 import networkx as nx
 
 
@@ -13,12 +14,19 @@ class Graph:
         
         # keep track of the node by id
         self.nodes = {}
+        self.freeze = False
 
     def add_node(self, n):
+        if self.freeze:
+            raise NotAirflowOutsideContext()
+
         self.G.add_node(n.get_key())
         self.nodes[n.get_key()] = n
 
     def add_edge(self, u, v):
+        if self.freeze:
+            raise NotAirflowOutsideContext()
+
         self.G.add_edge(u.get_key(), v.get_key())
 
     def get_node_by_key(self, key):
@@ -33,17 +41,21 @@ class Graph:
         except nx.exception.NetworkXNoCycle:
             cycles = []
 
+        # friendly name
         # cycles_ = [
         #         (self.get_node_by_key(u), self.get_node_by_key(v)) 
         #         for (u, v) in cycles]
         
-        # friendly name
         if cycles:
             return False
 
         return True
 
     def get_seq(self):
+        """
+        Convert execution graph into a queue so task can be compute
+        sequentially
+        """
         seq = nx.topological_sort(self.G)
         return list(seq)
 
@@ -85,7 +97,8 @@ class Job(Graph):
             code, msg = task()
 
             if code != 0:
-                raise ValueError(msg)
+                # raise ValueError(msg)
+                warnings.warn(f"Task {self.name} failed!!! Err msg: {msg}")
                 return code, msg
 
         return 0, "success"
@@ -96,6 +109,10 @@ class Job(Graph):
 
     def __exit__(self, *args):
         is_valid = self.is_valid()
+
+        # can't add more job outsize the context
+        self.freeze = True
+
         if not is_valid:
             raise ValueError("Invalid DAG, found cycle in DAG")
 
@@ -114,6 +131,9 @@ class Task(Node):
 
     @staticmethod
     def wrap(f):
+        """
+        tranform f signature f(any) -> any() into f() -> code, msg
+        """
         def __inner__():
             try:
                 ret = f() 
@@ -126,11 +146,14 @@ class Task(Node):
                 return 1, str(e)
         return __inner__
 
+    """
+    Convert any callable func into task instance,
+    for syntax convenience
+    """
     @staticmethod
-    def task_wrapper(job):
+    def wrapper(job):
         def inner(func):
             return Task(job, func.__name__, func)
-
         return inner
 
     def __call__(self): return self.f()
