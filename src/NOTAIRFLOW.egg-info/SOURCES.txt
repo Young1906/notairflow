@@ -1,13 +1,13 @@
 LICENSE
 README.md
 pyproject.toml
-src/NOTAIRFLOW/__init__.py
-src/NOTAIRFLOW/cores.py
-src/NOTAIRFLOW/exceptions.py
-src/NOTAIRFLOW/samples.py
 src/NOTAIRFLOW.egg-info/PKG-INFO
 src/NOTAIRFLOW.egg-info/SOURCES.txt
 src/NOTAIRFLOW.egg-info/dependency_links.txt
 src/NOTAIRFLOW.egg-info/requires.txt
 src/NOTAIRFLOW.egg-info/top_level.txt
+src/not_airflow/__init__.py
+src/not_airflow/cores.py
+src/not_airflow/exceptions.py
+src/not_airflow/samples.py
 tests/test_installation.py

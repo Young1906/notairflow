@@ -1,0 +1,13 @@
+LICENSE
+README.md
+pyproject.toml
+src/not_airflow/__init__.py
+src/not_airflow/cores.py
+src/not_airflow/exceptions.py
+src/not_airflow/samples.py
+src/not_airflow.egg-info/PKG-INFO
+src/not_airflow.egg-info/SOURCES.txt
+src/not_airflow.egg-info/dependency_links.txt
+src/not_airflow.egg-info/requires.txt
+src/not_airflow.egg-info/top_level.txt
+tests/test_installation.py

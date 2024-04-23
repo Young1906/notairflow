@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 
 [project]
-name = "NOTAIRFLOW"
+name = "not_airflow"
 version = "0.0.2"
 authors = [
   { name="Thanh Tu, Do", email="tu.dothanh1906@gmail.com" },

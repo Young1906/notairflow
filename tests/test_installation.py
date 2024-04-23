@@ -1,4 +1,5 @@
-from NOTAIRFLOW import Task, Job
+import unittest
+from not_airflow import Task, Job
 
 
 def TestJob() -> Job:
@@ -13,7 +14,6 @@ def TestJob() -> Job:
 
         @Task.wrapper(job)
         def test03():
-            1/0
             print("z")
 
         # invalid job, contain cycle

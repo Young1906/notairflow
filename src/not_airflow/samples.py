@@ -1,10 +1,18 @@
-import networkx as nx
-from matplotlib import pyplot as plt
+"""
+Sample for module's documentation
 
-from NOTAIRFLOW.cores import Job
-from NOTAIRFLOW.cores import Task
+TODO:
 
-def TestJob() -> Job:
+"""
+
+from .cores import Job
+from .cores import Task
+
+def test_job() -> Job:
+    """
+    Testing Job and Task's functionality
+    - Should return error since there is a cycle within the job
+    """
     with Job("test-job") as job:
         @Task.wrapper(job)
         def test01():
@@ -16,7 +24,6 @@ def TestJob() -> Job:
 
         @Task.wrapper(job)
         def test03():
-            1/0
             print("z")
 
         # invalid job, contain cycle
@@ -28,5 +35,5 @@ def TestJob() -> Job:
 
 
 if __name__ == "__main__":
-    j = TestJob()
+    j = test_job()
     j()

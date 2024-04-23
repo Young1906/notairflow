@@ -1,43 +1,66 @@
+"""
+core's implementation of not_airflow
+
+"""
+
 import inspect
 import warnings
-from collections import defaultdict
-from functools import wraps
+
+# from collections import defaultdict
+# from functools import wraps
 from uuid import uuid4
+
+import networkx as nx
+
 from .exceptions import NotAirflowInvalidDAG
 from .exceptions import NotAirflowOutsideContext
-import networkx as nx
 
 
 class Job:
+    """
+    job container
+    """
+
     def __init__(self, name: str):
         self.name = name
-        self.G = nx.DiGraph()
+        self.job_graph = nx.DiGraph()
 
         # keep track of the node by id
         self.nodes = {}
         self.freeze = False
 
     def add_node(self, n):
+        """
+        register a note to job's graph
+        """
         if self.freeze:
             raise NotAirflowOutsideContext()
 
-        self.G.add_node(n.get_key())
+        self.job_graph.add_node(n.get_key())
         self.nodes[n.get_key()] = n
 
     def add_edge(self, u, v):
+        """
+        register an edge to job's graph
+        """
         if self.freeze:
             raise NotAirflowOutsideContext()
 
-        self.G.add_edge(u.get_key(), v.get_key())
+        self.job_graph.add_edge(u.get_key(), v.get_key())
 
     def get_node_by_key(self, key):
+        """
+        return a node by its key
+        """
         return self.nodes[key]
 
     # check if the execution graph is valid
     def is_valid(self):
-        # check for circle
+        """
+        Check if the job is valid, must contain no cycle within the graph
+        """
         try:
-            cycles = nx.find_cycle(self.G)
+            cycles = nx.find_cycle(self.job_graph)
 
         except nx.exception.NetworkXNoCycle:
             cycles = []
@@ -52,7 +75,7 @@ class Job:
         Convert execution graph into a queue so task can be execute
         sequentially
         """
-        seq = nx.topological_sort(self.G)
+        seq = nx.topological_sort(self.job_graph)
         return list(seq)
 
     def __call__(self):
@@ -82,10 +105,14 @@ class Job:
         self.freeze = True
 
         if not is_valid:
-            raise ValueError("Invalid DAG, found cycle in DAG")
+            raise NotAirflowInvalidDAG()
 
 
 class Task:
+    """
+    task container
+    """
+
     def __init__(self, job: Job, name: str, f: callable):
         self.name = name
         self.__key = uuid4()
@@ -112,6 +139,9 @@ class Task:
         return f"((node) {self.name})"
 
     def get_key(self):
+        """
+        return task's key
+        """
         return str(self.__key)
 
     @staticmethod
@@ -133,13 +163,13 @@ class Task:
 
         return __inner__
 
-
     @staticmethod
     def wrapper(job):
         """
         Convert any callable func into task instance,
         for syntax convenience
         """
+
         def inner(func):
             return Task(job, func.__name__, func)
 

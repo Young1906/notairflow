@@ -1,5 +1,5 @@
 Metadata-Version: 2.1
-Name: NOTAIRFLOW
+Name: not_airflow
 Version: 0.0.2
 Summary: A small example package implementing Airflow DAG: structured job consist of multiple task and its dependency
 Author-email: "Thanh Tu, Do" <tu.dothanh1906@gmail.com>
