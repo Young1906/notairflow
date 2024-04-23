@@ -5,7 +5,7 @@
 ## Installtion
 
 ```
-pip install git+https://github.com/young1906/notairflow
+pip install git+https://github.com/young1906/notairflow#v0.0.2
 ```
 
 ## Examples
