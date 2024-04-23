@@ -50,11 +50,16 @@ def build_cycle_job () -> Job:
 
     return job
 
-class SuccessTest(unittest.TestCase):
+
+class AllTestCase(unittest.TestCase):
     """
+    idk to write fail test-cases yet.
     """
+
     def setUp(self):
         self.job_success = build_success_job()
+
+        # raised error on initialization
         self.job_fail_cycle = build_cycle_job()
 
     def test_success(self):
