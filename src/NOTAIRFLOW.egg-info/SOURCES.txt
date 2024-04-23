@@ -9,3 +9,4 @@ src/NOTAIRFLOW.egg-info/PKG-INFO
 src/NOTAIRFLOW.egg-info/SOURCES.txt
 src/NOTAIRFLOW.egg-info/dependency_links.txt
 src/NOTAIRFLOW.egg-info/top_level.txt
+tests/test_installation.py

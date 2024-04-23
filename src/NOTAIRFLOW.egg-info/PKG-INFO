@@ -14,12 +14,13 @@ License-File: LICENSE
 
 # NOTAIRFLOW
 
-A simple python job orchestration tool.
 
-Plan:
 
-Features:
+## INSTALLATION
 
-Constraints:
-- each task must be self-contained, no params can be passed into a task
+```
+pip install git+https://github.com/young1906/notairflow
+```
+
+
 
