@@ -42,11 +42,6 @@ class Job:
         except nx.exception.NetworkXNoCycle:
             cycles = []
 
-        # friendly name
-        # cycles_ = [
-        #         (self.get_node_by_key(u), self.get_node_by_key(v))
-        #         for (u, v) in cycles]
-
         if cycles:
             return False
 
@@ -54,7 +49,7 @@ class Job:
 
     def get_seq(self):
         """
-        Convert execution graph into a queue so task can be compute
+        Convert execution graph into a queue so task can be execute
         sequentially
         """
         seq = nx.topological_sort(self.G)
@@ -138,13 +133,13 @@ class Task:
 
         return __inner__
 
-    """
-    Convert any callable func into task instance,
-    for syntax convenience
-    """
 
     @staticmethod
     def wrapper(job):
+        """
+        Convert any callable func into task instance,
+        for syntax convenience
+        """
         def inner(func):
             return Task(job, func.__name__, func)
 

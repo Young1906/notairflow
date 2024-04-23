@@ -31,6 +31,7 @@ def TestJob() -> Job:
         # invalid job, contain cycle
         test01 >> test02
         test02 >> test03
+        test01 << test03
 
     return job
 
